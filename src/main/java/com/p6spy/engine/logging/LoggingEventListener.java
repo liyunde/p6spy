@@ -33,12 +33,15 @@ import java.sql.SQLException;
  * <p>
  * To use a custom implementation for logging, extend this class and add the fully qualified class name of your
  * implementation to <code>src/main/resources/META-INF/services/com.p6spy.engine.logging.LoggingEventListener</code>.
+ *
+ * @author liyunde
+ * @since 2019-06-27 19:16
  */
 public class LoggingEventListener extends SimpleJdbcEventListener {
 
   private static final Logger logger = LoggerFactory.getLogger(LoggingEventListener.class);
 
-  public static final LoggingEventListener INSTANCE = new LoggingEventListener();
+  static final LoggingEventListener INSTANCE = new LoggingEventListener();
 
   protected LoggingEventListener() {
   }
@@ -108,7 +111,6 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onBeforeResultSetNext(ResultSetInformation resultSetInformation) {
-    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
 
     if (resultSetInformation.getCurrRow() > -1) {
       // Log the columns that were accessed except on the first call to ResultSet.next().  The first time it is
@@ -119,8 +121,6 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onAfterResultSetNext(ResultSetInformation resultSetInformation, long timeElapsedNanos, boolean hasNext, SQLException e) {
-    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
-
     if (hasNext) {
       logElapsed(resultSetInformation, timeElapsedNanos, Category.RESULT, e);
     }
@@ -128,8 +128,6 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onAfterResultSetClose(ResultSetInformation resultSetInformation, SQLException e) {
-    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
-
     if (resultSetInformation.getCurrRow() > -1) {
       // If the result set has not been advanced to the first row, there is nothing to log.
       resultSetInformation.generateLogMessage();
