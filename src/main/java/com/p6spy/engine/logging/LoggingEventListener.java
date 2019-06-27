@@ -1,14 +1,14 @@
 /**
  * P6Spy
- *
+ * <p>
  * Copyright (C) 2002 - 2019 P6Spy
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,8 @@ import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.ResultSetInformation;
 import com.p6spy.engine.common.StatementInformation;
 import com.p6spy.engine.event.SimpleJdbcEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
@@ -34,13 +36,38 @@ import java.sql.SQLException;
  */
 public class LoggingEventListener extends SimpleJdbcEventListener {
 
+  private static final Logger logger = LoggerFactory.getLogger(LoggingEventListener.class);
+
   public static final LoggingEventListener INSTANCE = new LoggingEventListener();
 
   protected LoggingEventListener() {
   }
 
   @Override
+  public void onBeforeAnyExecute(final StatementInformation statementInformation) {
+
+    String statementQuery = statementInformation.getStatementQuery();
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("onBeforeAnyExecute:{} => {} => {}", statementQuery,
+                   statementInformation.getSql(),
+                   statementInformation.getSqlWithValues());
+    }
+
+    if (!statementQuery.startsWith("select ")) {
+      P6LogQuery.log(Category.EXECUTE, statementQuery, statementInformation.getSqlWithValues());
+    }
+  }
+
+  @Override
   public void onAfterAnyExecute(StatementInformation statementInformation, long timeElapsedNanos, SQLException e) {
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("onAfterAnyExecute:{} => {} => {}", statementInformation.getStatementQuery(),
+                   statementInformation.getSql(),
+                   statementInformation.getSqlWithValues());
+    }
+
     logElapsed(statementInformation, timeElapsedNanos, Category.STATEMENT, e);
   }
 
@@ -81,6 +108,8 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onBeforeResultSetNext(ResultSetInformation resultSetInformation) {
+    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
+
     if (resultSetInformation.getCurrRow() > -1) {
       // Log the columns that were accessed except on the first call to ResultSet.next().  The first time it is
       // called it is advancing to the first row.
@@ -90,6 +119,8 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onAfterResultSetNext(ResultSetInformation resultSetInformation, long timeElapsedNanos, boolean hasNext, SQLException e) {
+    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
+
     if (hasNext) {
       logElapsed(resultSetInformation, timeElapsedNanos, Category.RESULT, e);
     }
@@ -97,6 +128,8 @@ public class LoggingEventListener extends SimpleJdbcEventListener {
 
   @Override
   public void onAfterResultSetClose(ResultSetInformation resultSetInformation, SQLException e) {
+    logger.debug("currRow:{},resultMap:{}", resultSetInformation.getCurrRow(), resultSetInformation.getSql());
+
     if (resultSetInformation.getCurrRow() > -1) {
       // If the result set has not been advanced to the first row, there is nothing to log.
       resultSetInformation.generateLogMessage();

@@ -1,14 +1,14 @@
 /**
  * P6Spy
- *
+ * <p>
  * Copyright (C) 2002 - 2019 P6Spy
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,47 +21,47 @@ import com.p6spy.engine.logging.Category;
 
 public interface P6Logger {
 
-        /**
-         * Logs the {@code SQL}.
-         * 
-         * @param connectionId
-         *            connection identifier.
-         * @param now
-         *            current time.
-         * @param elapsed
-         * @param category
-         *            the category to be used for logging.
-         * @param prepared
-         *            the prepared statement to be logged.
-         * @param sql
-         *            the {@code SQL} to be logged.
-         * @param url
-         *            the database url where the sql statement executed
-         */
-        public void logSQL(int connectionId, String now, long elapsed,
-                        Category category, String prepared, String sql, String url);
+  /**
+   * Logs the {@code SQL}.
+   *
+   * @param connectionId
+   *            connection identifier.
+   * @param now
+   *            current time.
+   * @param elapsed
+   * @param category
+   *            the category to be used for logging.
+   * @param prepared
+   *            the prepared statement to be logged.
+   * @param sql
+   *            the {@code SQL} to be logged.
+   * @param url
+   *            the database url where the sql statement executed
+   */
+  void logSQL(int connectionId, String now, long elapsed,
+              Category category, String prepared, String sql, String url);
 
-        /**
-         * Logs the stacktrace of the exception.
-         * 
-         * @param e
-         *            exception holding the stacktrace to be logged.
-         */
-        public void logException(Exception e);
+  /**
+   * Logs the stacktrace of the exception.
+   *
+   * @param e
+   *            exception holding the stacktrace to be logged.
+   */
+  void logException(Exception e);
 
-        /**
-         * Logs the text.
-         * 
-         * @param text
-         *            to be logged
-         */
-        public void logText(String text);
+  /**
+   * Logs the text.
+   *
+   * @param text
+   *            to be logged
+   */
+  void logText(String text);
 
-        /**
-         * @param category
-         *            the category to be evaluated.
-         * @return {@code true} if category is enabled. Otherwise returns
-         *         {@code false}
-         */
-        public boolean isCategoryEnabled(Category category);
+  /**
+   * @param category
+   *            the category to be evaluated.
+   * @return {@code true} if category is enabled. Otherwise returns
+   *         {@code false}
+   */
+  boolean isCategoryEnabled(Category category);
 }

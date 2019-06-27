@@ -34,10 +34,13 @@ public class Category {
 	public static final Category BATCH = new Category("batch");
 	public static final Category STATEMENT = new Category("statement");
 	public static final Category RESULTSET = new Category("resultset");
+
 	public static final Category COMMIT = new Category("commit");
 	public static final Category ROLLBACK = new Category("rollback");
 	public static final Category RESULT = new Category("result");
 	public static final Category OUTAGE = new Category("outage");
+
+	public static final Category EXECUTE = new Category("execute");
 
 	private final String name;
 

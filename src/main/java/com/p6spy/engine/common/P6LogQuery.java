@@ -17,15 +17,6 @@
  */
 package com.p6spy.engine.common;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
 import com.p6spy.engine.logging.Category;
 import com.p6spy.engine.logging.P6LogLoadableOptions;
 import com.p6spy.engine.logging.P6LogOptions;
@@ -36,6 +27,15 @@ import com.p6spy.engine.spy.appender.FormattedLogger;
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;
 import com.p6spy.engine.spy.appender.P6Logger;
 import com.p6spy.engine.spy.option.P6OptionChangedListener;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class P6LogQuery implements P6OptionChangedListener {
   
@@ -53,6 +53,7 @@ public class P6LogQuery implements P6OptionChangedListener {
     initialize();
   }
 
+  @Override
   public void optionChanged(final String key, final Object oldValue, final Object newValue) {
     if (ON_CHANGE.contains(key)) {
       initialize();
@@ -129,7 +130,7 @@ public class P6LogQuery implements P6OptionChangedListener {
           PrintWriter pw = new PrintWriter(sw);
           e.printStackTrace(pw);
           String stack = sw.toString();
-          if (stack.indexOf(stackTraceClass) == -1) {
+          if (!stack.contains(stackTraceClass)) {
             e = null;
           }
         }

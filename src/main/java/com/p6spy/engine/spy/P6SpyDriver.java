@@ -1,14 +1,14 @@
 /**
  * P6Spy
- *
+ * <p>
  * Copyright (C) 2002 - 2019 P6Spy
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 package com.p6spy.engine.spy;
+
+import com.p6spy.engine.common.ConnectionInformation;
+import com.p6spy.engine.common.P6LogQuery;
+import com.p6spy.engine.event.JdbcEventListener;
+import com.p6spy.engine.wrapper.ConnectionWrapper;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -28,11 +33,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import com.p6spy.engine.common.ConnectionInformation;
-import com.p6spy.engine.common.P6LogQuery;
-import com.p6spy.engine.event.JdbcEventListener;
-import com.p6spy.engine.wrapper.ConnectionWrapper;
 
 /**
  * JDBC driver for P6Spy
@@ -58,6 +58,7 @@ public class P6SpyDriver implements Driver {
    * Parses out the real JDBC connection URL by removing "p6spy:".
    *
    * @param url the connection URL
+   *
    * @return the parsed URL
    */
   private String extractRealUrl(String url) {
@@ -79,7 +80,7 @@ public class P6SpyDriver implements Driver {
       throw new SQLException("url is required");
     }
 
-    if( !acceptsURL(url) ) {
+    if (!acceptsURL(url)) {
       return null;
     }
 
@@ -99,7 +100,7 @@ public class P6SpyDriver implements Driver {
     connectionInformation.setUrl(url);
     jdbcEventListener.onBeforeGetConnection(connectionInformation);
     try {
-      conn =  passThru.connect(extractRealUrl(url), properties);
+      conn = passThru.connect(extractRealUrl(url), properties);
       connectionInformation.setConnection(conn);
       connectionInformation.setTimeToGetConnectionNs(System.nanoTime() - start);
       jdbcEventListener.onAfterGetConnection(connectionInformation, null);
@@ -115,19 +116,20 @@ public class P6SpyDriver implements Driver {
   protected Driver findPassthru(String url) throws SQLException {
     // registers the passthru drivers, if configured s
     P6ModuleManager.getInstance();
-    
+
     String realUrl = extractRealUrl(url);
     Driver passthru = null;
-    for (Driver driver: registeredDrivers() ) {
+    for (Driver driver : registeredDrivers()) {
       try {
         if (driver.acceptsURL(extractRealUrl(url))) {
           passthru = driver;
           break;
         }
       } catch (SQLException e) {
+        //驱动为了性能,不记录日志
       }
     }
-    if( passthru == null ) {
+    if (passthru == null) {
       throw new SQLException("Unable to find a driver that accepts " + realUrl);
     }
     return passthru;
@@ -157,10 +159,11 @@ public class P6SpyDriver implements Driver {
   }
 
   // Note: @Override annotation not added to allow compilation using Java 1.6
+  @Override
   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
     throw new SQLFeatureNotSupportedException("Feature not supported");
   }
-  
+
   public static void setJdbcEventListenerFactory(JdbcEventListenerFactory jdbcEventListenerFactory) {
     P6SpyDriver.jdbcEventListenerFactory = jdbcEventListenerFactory;
   }
